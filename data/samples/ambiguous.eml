@@ -1,0 +1,12 @@
+From: Billing Notices <billing@partner.example>
+To: analyst@example.org
+Reply-To: support@external.example
+Subject: Updated billing notification
+Date: Mon, 21 Sep 2026 09:00:00 +0000
+Authentication-Results: mx.example.org; spf=pass; dkim=pass; dmarc=pass
+
+Hello,
+
+We have updated the billing contact information for your organization. Please contact support if this was unexpected.
+
+Billing Operations

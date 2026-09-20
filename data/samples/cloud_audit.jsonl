@@ -1,0 +1,2 @@
+{"timestamp":"2026-01-02T03:15:00Z","user":"alice","resource":"prod-api-1","eventName":"ListBuckets","source_ip":"198.51.100.25","metadata":{"environment":"production","provider":"example-cloud"}}
+{"timestamp":"2026-01-02T03:16:00Z","user":"service-account","resource":"dev-storage-1","eventName":"GetObject","source_ip":"198.51.100.40","metadata":{"environment":"development","provider":"example-cloud"}}

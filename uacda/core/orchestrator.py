@@ -11,11 +11,12 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from uacda.compliance_audit.checker import ComplianceGapReport, check_compliance
 from uacda.core.schemas import Alert, Incident, NormalizedEvent, RiskScore
 from uacda.correlation_engine.correlator import correlate_alerts
 from uacda.detection_engine.llm_reasoner import LLMProvider, merge_detections
 from uacda.log_ingestion.loader import load_events
-from uacda.phishing_analysis.analyzer import analyze_eml
+from uacda.phishing_analysis.analyzer import PhishingVerdict, analyze_eml
 from uacda.reporting.report_generator import generate_incident_report
 from uacda.response_planner.planner import ResponseAction, plan_response
 from uacda.risk_prioritization.scorer import score_incident
@@ -36,6 +37,8 @@ class OrchestrationResult(BaseModel):
     risk_scores: dict[str, RiskScore] = Field(default_factory=dict)
     response_plans: dict[str, list[ResponseAction]] = Field(default_factory=dict)
     reports: dict[str, str] = Field(default_factory=dict)
+    phishing_verdicts: dict[str, PhishingVerdict] = Field(default_factory=dict)
+    compliance_report: ComplianceGapReport | None = None
 
 
 def _event_fingerprint(event: NormalizedEvent) -> str:
@@ -62,7 +65,7 @@ def _append_audit_record(path: str | Path, record: dict[str, Any]) -> None:
         LOGGER.warning("Unable to write audit record to %s: %s", audit_path, error)
 
 
-def _phishing_alert(path: Path) -> tuple[NormalizedEvent, Alert | None]:
+def _phishing_alert(path: Path) -> tuple[NormalizedEvent, PhishingVerdict, Alert | None]:
     verdict = analyze_eml(path)
     event = NormalizedEvent(
         source_type="email",
@@ -73,14 +76,14 @@ def _phishing_alert(path: Path) -> tuple[NormalizedEvent, Alert | None]:
         metadata={"evidence": verdict.evidence},
     )
     if verdict.verdict == "clean":
-        return event, None
+        return event, verdict, None
     alert = Alert(
         events=[event],
         detector_name="phishing_analysis",
         confidence=verdict.confidence,
         description=" ".join(verdict.evidence) or f"Email classified as {verdict.verdict}.",
     )
-    return event, alert
+    return event, verdict, alert
 
 
 def run_pipeline(
@@ -90,6 +93,8 @@ def run_pipeline(
     ioc_path: str | Path | None = None,
     asset_inventory_path: str | Path = "config/asset_inventory.json",
     playbook_path: str | Path = "config/playbooks.yaml",
+    organization_config_path: str | Path = "config/organization_config.json",
+    framework_path: str | Path = "config/frameworks/cis_subset.yaml",
     audit_log_path: str | Path = DEFAULT_AUDIT_LOG_PATH,
 ) -> OrchestrationResult:
     """Run ingestion, detection, phishing analysis, correlation, and reporting."""
@@ -97,11 +102,13 @@ def run_pipeline(
     input_list = [Path(path) for path in input_paths]
     events: list[NormalizedEvent] = []
     phishing_alerts: list[Alert] = []
+    phishing_verdicts: dict[str, PhishingVerdict] = {}
     for path in input_list:
         if path.suffix.lower() == ".eml":
             try:
-                email_event, alert = _phishing_alert(path)
+                email_event, verdict, alert = _phishing_alert(path)
                 events.append(email_event)
+                phishing_verdicts[str(path)] = verdict
                 _append_audit_record(
                     audit_log_path,
                     {
@@ -233,6 +240,26 @@ def run_pipeline(
             },
         )
 
+    compliance_report = check_compliance(
+        organization_config_path=organization_config_path,
+        framework_path=framework_path,
+    )
+    _append_audit_record(
+        audit_log_path,
+        {
+            "stage": "compliance_audit",
+            "decision": "compliance_report_generated",
+            "detector_name": "compliance_audit",
+            "confidence": 1.0,
+            "evidence_refs": [result.control_id for result in compliance_report.controls],
+            "details": {
+                "framework": compliance_report.framework,
+                "passed_count": compliance_report.passed_count,
+                "failed_count": compliance_report.failed_count,
+            },
+        },
+    )
+
     return OrchestrationResult(
         events=events,
         alerts=alerts,
@@ -240,6 +267,8 @@ def run_pipeline(
         risk_scores=risk_scores,
         response_plans=response_plans,
         reports=reports,
+        phishing_verdicts=phishing_verdicts,
+        compliance_report=compliance_report,
     )
 
 
