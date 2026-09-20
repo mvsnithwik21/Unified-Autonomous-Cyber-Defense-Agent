@@ -1,0 +1,11 @@
+From: Microsoft Security <security@microsoft.com>
+To: analyst@example.org
+Subject: Monthly security summary
+Date: Mon, 21 Sep 2026 09:00:00 +0000
+Authentication-Results: mx.example.org; spf=pass; dkim=pass; dmarc=pass
+
+Hello,
+
+Your monthly security summary is ready. Visit https://www.microsoft.com/security for details.
+
+Microsoft Security Team

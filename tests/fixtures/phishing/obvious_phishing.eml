@@ -1,0 +1,23 @@
+From: Microsoft Account Team <security@microsoft.com>
+To: analyst@example.org
+Reply-To: reset@micros0ft-login.com
+Subject: Urgent account verification required
+Date: Mon, 21 Sep 2026 09:00:00 +0000
+Authentication-Results: mx.example.org; spf=fail; dkim=fail; dmarc=fail
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="phishing-boundary"
+
+--phishing-boundary
+Content-Type: text/plain; charset="utf-8"
+
+Your account will be suspended today. Verify immediately at https://micros0ft-login.com/verify.
+
+Please see the attached security update.
+
+--phishing-boundary
+Content-Type: application/octet-stream; name="security_update.exe"
+Content-Disposition: attachment; filename="security_update.exe"
+Content-Transfer-Encoding: base64
+
+TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+--phishing-boundary--
