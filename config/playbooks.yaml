@@ -1,0 +1,137 @@
+playbooks:
+  brute_force:
+    severity:
+      critical:
+        - action: "Collect authentication evidence for {incident_id}."
+          rationale: "Preserve login telemetry before containment."
+          requires_human_approval: false
+        - action: "Isolate affected hosts: {assets}."
+          rationale: "Stop continued access while preserving the incident scope."
+          requires_human_approval: true
+        - action: "Revoke credentials associated with the affected actor."
+          rationale: "Prevent reuse of credentials after repeated failed authentication."
+          requires_human_approval: true
+      high:
+        - action: "Collect authentication evidence for {incident_id}."
+          rationale: "Preserve login telemetry for investigation."
+          requires_human_approval: false
+        - action: "Temporarily isolate affected hosts: {assets}."
+          rationale: "Contain a likely brute-force campaign."
+          requires_human_approval: true
+        - action: "Require a credential reset for the affected actor."
+          rationale: "Reduce the chance of successful credential reuse."
+          requires_human_approval: true
+      medium:
+        - action: "Review failed-login sources and authentication telemetry."
+          rationale: "Confirm whether the activity is automated or user error."
+          requires_human_approval: false
+        - action: "Add a temporary rate-limit or block for confirmed sources."
+          rationale: "Reduce repeated attempts after analyst confirmation."
+          requires_human_approval: true
+      low:
+        - action: "Review the failed-login trend during the next SOC cycle."
+          rationale: "Track whether the activity persists."
+          requires_human_approval: false
+
+  phishing:
+    severity:
+      critical:
+        - action: "Preserve the original message and analysis evidence."
+          rationale: "Maintain evidence for investigation and scope analysis."
+          requires_human_approval: false
+        - action: "Block phishing URLs and sender infrastructure."
+          rationale: "Prevent additional recipients from reaching the campaign."
+          requires_human_approval: true
+        - action: "Revoke or reset credentials for confirmed recipients."
+          rationale: "Contain possible credential exposure."
+          requires_human_approval: true
+      high:
+        - action: "Search mailboxes for matching messages and URLs."
+          rationale: "Identify all potentially affected recipients."
+          requires_human_approval: false
+        - action: "Quarantine matching messages."
+          rationale: "Remove the suspected campaign from user inboxes."
+          requires_human_approval: true
+        - action: "Block the confirmed phishing domain."
+          rationale: "Prevent further access to the malicious destination."
+          requires_human_approval: true
+      medium:
+        - action: "Notify recipients and preserve the original message."
+          rationale: "Support user reporting and later investigation."
+          requires_human_approval: false
+        - action: "Request analyst review of URLs and authentication evidence."
+          rationale: "Confirm whether containment is warranted."
+          requires_human_approval: false
+      low:
+        - action: "Record the message indicators for monitoring."
+          rationale: "Retain context without taking disruptive action."
+          requires_human_approval: false
+
+  malware:
+    severity:
+      critical:
+        - action: "Collect volatile host and malware evidence from {assets}."
+          rationale: "Preserve evidence before containment changes system state."
+          requires_human_approval: false
+        - action: "Isolate affected hosts: {assets}."
+          rationale: "Limit execution and lateral movement."
+          requires_human_approval: true
+        - action: "Block confirmed malware indicators at network controls."
+          rationale: "Prevent communication with known malicious infrastructure."
+          requires_human_approval: true
+      high:
+        - action: "Collect endpoint telemetry and suspicious files."
+          rationale: "Establish scope and preserve forensic evidence."
+          requires_human_approval: false
+        - action: "Isolate affected hosts: {assets}."
+          rationale: "Contain likely malware activity."
+          requires_human_approval: true
+      medium:
+        - action: "Validate the indicator match against endpoint telemetry."
+          rationale: "Reduce false positives before disruptive containment."
+          requires_human_approval: false
+        - action: "Block confirmed indicators at the network boundary."
+          rationale: "Limit additional exposure after validation."
+          requires_human_approval: true
+      low:
+        - action: "Monitor the matched indicator and collect supporting telemetry."
+          rationale: "Gather context before escalating response."
+          requires_human_approval: false
+
+  impossible_travel:
+    severity:
+      critical:
+        - action: "Preserve authentication and geolocation evidence."
+          rationale: "Keep the source events needed to confirm account compromise."
+          requires_human_approval: false
+        - action: "Revoke active sessions and credentials for the affected actor."
+          rationale: "Stop unauthorized access while the account is investigated."
+          requires_human_approval: true
+        - action: "Require an identity-owner confirmation before restoring access."
+          rationale: "Prevent reactivation of a compromised account."
+          requires_human_approval: true
+      high:
+        - action: "Review sign-in locations, devices, and authentication factors."
+          rationale: "Confirm whether the travel signal is legitimate."
+          requires_human_approval: false
+        - action: "Revoke suspicious sessions for the affected actor."
+          rationale: "Contain likely account misuse."
+          requires_human_approval: true
+      medium:
+        - action: "Notify the account owner and request sign-in confirmation."
+          rationale: "Resolve an ambiguous location signal with the user."
+          requires_human_approval: false
+      low:
+        - action: "Monitor subsequent sign-ins for the affected actor."
+          rationale: "Look for repeated anomalous travel before escalation."
+          requires_human_approval: false
+
+  generic:
+    severity:
+      default:
+        - action: "Review incident evidence and affected assets."
+          rationale: "Establish scope before selecting a containment action."
+          requires_human_approval: false
+        - action: "Escalate the incident to the on-call analyst."
+          rationale: "Unknown incident types require human triage."
+          requires_human_approval: false
