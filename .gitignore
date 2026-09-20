@@ -38,3 +38,4 @@ audit_log.jsonl
 *.log
 /data/samples/generated/
 /reports/*.md
+/ui/approval_log.jsonl
