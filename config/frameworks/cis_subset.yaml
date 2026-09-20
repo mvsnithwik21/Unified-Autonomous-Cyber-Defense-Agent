@@ -1,0 +1,82 @@
+framework: CIS Controls v8 Subset
+controls:
+  - id: CIS-1.1
+    title: Maintain an asset inventory
+    description: The organization maintains an inventory of assets.
+    path: asset_inventory.maintained
+    operator: equals
+    expected: true
+    evidence: Asset inventory maintenance setting.
+    remediation: Establish and review a complete asset inventory process.
+  - id: CIS-5.2
+    title: Require multifactor authentication
+    description: Multifactor authentication is required for organizational accounts.
+    path: identity.mfa_required
+    operator: equals
+    expected: true
+    evidence: Identity MFA enforcement setting.
+    remediation: Require phishing-resistant MFA for all supported accounts.
+  - id: CIS-5.4
+    title: Use unique accounts
+    description: Individual accounts are used instead of shared identities.
+    path: identity.unique_accounts
+    operator: equals
+    expected: true
+    evidence: Account uniqueness setting.
+    remediation: Remove shared accounts and assign each user a unique identity.
+  - id: CIS-6.3
+    title: Enforce least privilege
+    description: Access is limited to the minimum required permissions.
+    path: access.least_privilege
+    operator: equals
+    expected: true
+    evidence: Least-privilege access setting.
+    remediation: Review access grants and remove permissions beyond job requirements.
+  - id: CIS-8.2
+    title: Centralize audit logging
+    description: Security-relevant logs are collected centrally.
+    path: logging.centralized
+    operator: equals
+    expected: true
+    evidence: Centralized logging setting.
+    remediation: Forward security logs to a protected central logging platform.
+  - id: CIS-8.3
+    title: Retain audit logs
+    description: Audit logs are retained for at least 90 days.
+    path: logging.retention_days
+    operator: gte
+    expected: 90
+    evidence: Configured audit-log retention period.
+    remediation: Increase protected audit-log retention to at least 90 days.
+  - id: CIS-10.1
+    title: Enable endpoint protection
+    description: Endpoint protection is enabled on managed systems.
+    path: endpoint_protection.enabled
+    operator: equals
+    expected: true
+    evidence: Endpoint protection setting.
+    remediation: Deploy and enable endpoint protection on all managed systems.
+  - id: CIS-7.3
+    title: Patch within the remediation window
+    description: Critical systems receive patches within 30 days.
+    path: patching.maximum_days
+    operator: lte
+    expected: 30
+    evidence: Maximum configured patching interval.
+    remediation: Set and enforce a patching interval of 30 days or less.
+  - id: CIS-11.4
+    title: Encrypt backups
+    description: Backups are encrypted at rest.
+    path: backups.encrypted
+    operator: equals
+    expected: true
+    evidence: Backup encryption setting.
+    remediation: Enable encryption for backup data at rest and protect its keys.
+  - id: CIS-17.7
+    title: Test incident response
+    description: The incident response plan is tested regularly.
+    path: incident_response.tested
+    operator: equals
+    expected: true
+    evidence: Incident-response exercise setting.
+    remediation: Schedule and document recurring incident-response exercises.

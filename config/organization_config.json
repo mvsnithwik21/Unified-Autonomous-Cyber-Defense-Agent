@@ -1,0 +1,28 @@
+{
+  "asset_inventory": {
+    "maintained": true
+  },
+  "identity": {
+    "mfa_required": true,
+    "unique_accounts": false
+  },
+  "access": {
+    "least_privilege": true
+  },
+  "logging": {
+    "centralized": true,
+    "retention_days": 30
+  },
+  "endpoint_protection": {
+    "enabled": true
+  },
+  "patching": {
+    "maximum_days": 14
+  },
+  "backups": {
+    "encrypted": false
+  },
+  "incident_response": {
+    "tested": true
+  }
+}
